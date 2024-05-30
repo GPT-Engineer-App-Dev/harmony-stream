@@ -1,5 +1,6 @@
 import { Container, Text, VStack, Box, Heading, Button, Image } from "@chakra-ui/react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -18,6 +19,9 @@ const Index = () => {
         </Box>
         <Button onClick={handlePlayPause} colorScheme="teal" size="lg" mt={6}>
           {isPlaying ? "Pause" : "Play"}
+        </Button>
+        <Button as={Link} to="/playlists" colorScheme="teal" size="lg" mt={6}>
+          Manage Playlists
         </Button>
       </VStack>
     </Container>
