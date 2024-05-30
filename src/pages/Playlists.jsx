@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Container, Heading, VStack, Input, Button, List, ListItem, Text } from "@chakra-ui/react";
 
 const Playlists = () => {
@@ -6,6 +6,17 @@ const Playlists = () => {
   const [newPlaylistName, setNewPlaylistName] = useState("");
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [newSong, setNewSong] = useState("");
+  const [currentSong, setCurrentSong] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    if (currentSong) {
+      audioRef.current.src = currentSong;
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  }, [currentSong]);
 
   const handleCreatePlaylist = () => {
     if (newPlaylistName.trim() !== "") {
@@ -24,6 +35,28 @@ const Playlists = () => {
       });
       setPlaylists(updatedPlaylists);
       setNewSong("");
+    }
+  };
+
+  const handlePlaySong = (song) => {
+    setCurrentSong(song);
+  };
+
+  const handlePause = () => {
+    audioRef.current.pause();
+    setIsPlaying(false);
+  };
+
+  const handleResume = () => {
+    audioRef.current.play();
+    setIsPlaying(true);
+  };
+
+  const handleTogglePlayback = () => {
+    if (isPlaying) {
+      handlePause();
+    } else {
+      handleResume();
     }
   };
 
@@ -55,6 +88,9 @@ const Playlists = () => {
                     {playlist.songs.map((song, songIndex) => (
                       <ListItem key={songIndex}>
                         <Text>{song}</Text>
+                        <Button onClick={() => handlePlaySong(song)} colorScheme="teal" size="sm" mt={2}>
+                          Play
+                        </Button>
                       </ListItem>
                     ))}
                   </List>
@@ -63,7 +99,16 @@ const Playlists = () => {
             </ListItem>
           ))}
         </List>
+        {currentSong && (
+          <VStack spacing={2} mt={4}>
+            <Text>Now Playing: {currentSong}</Text>
+            <Button onClick={handleTogglePlayback} colorScheme="teal" size="sm">
+              {isPlaying ? "Pause" : "Resume"}
+            </Button>
+          </VStack>
+        )}
       </VStack>
+      <audio ref={audioRef} />
     </Container>
   );
 };
